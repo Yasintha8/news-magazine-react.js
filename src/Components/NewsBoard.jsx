@@ -1,64 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 import NewsItem from "./NewsItem";
 
-const NewsBoard = ({ category }) => {
-  const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const NewsBoard = ({category}) => {
 
-  useEffect(() => {
-    const apiKey = import.meta.env.VITE_API_KEY || "your-default-api-key-here"; // Fallback API key for testing purposes
-    const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${apiKey}`;
+    const[articles, setArticles] = useState([]);
 
-    setLoading(true);
-    setError(null);
+    useEffect(()=>{
+        let url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${import.meta.env.VITE_API_KEY}`
+        fetch(url).then(res => res.json()).then(data => setArticles(data.articles));
+        
+    },[category])
 
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log("API Response:", data); // Log the response to check the structure
-        if (data && data.articles && Array.isArray(data.articles)) {
-          setArticles(data.articles);
-        } else {
-          setError("No articles found or invalid data format.");
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(`Failed to load news: ${err.message}`);
-        setLoading(false);
-        console.error("Error fetching news:", err);
-      });
-  }, [category]);
 
   return (
     <div>
-      <h2 className="text-center">
-        Latest <span className="badge bg-danger mt-2">News</span>
-      </h2>
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-danger">{error}</p>}
-      {articles.length === 0 && !loading && !error && (
-        <p>No articles found or invalid data format.</p>
-      )}
-      {articles.map((news, index) => {
-        return (
-          <NewsItem
-            key={index}
-            title={news.title}
-            description={news.description}
-            src={news.urlToImage}
-            url={news.url}
-          />
-        );
-      })}
+        <h2 className="text-center">Latest <span className="badge bg-danger mt-2">News</span></h2>
+        {articles.map((news,index)=>{
+            return <NewsItem key={index} title={news.title} description={news.description} src={news.urlToImage} url={news.url}/>
+        })}
     </div>
-  );
-};
+  )
+}
 
-export default NewsBoard;
+export default NewsBoard
