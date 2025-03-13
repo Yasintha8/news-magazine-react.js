@@ -7,29 +7,29 @@ const NewsBoard = ({ category }) => {
   const [error, setError] = useState(null);      // To handle any fetch errors
 
   useEffect(() => {
-    // Ensure the API key is being accessed correctly
-    console.log('API Key:', import.meta.env.VITE_API_KEY); // Debugging: check the API key
-
-    // Fetch URL with category from props and the API key
     const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${import.meta.env.VITE_API_KEY}`;
 
-    setLoading(true); // Set loading state to true when fetching data
-    setError(null);   // Reset error state
+    setLoading(true);
+    setError(null);
 
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        setArticles(data.articles);
-        setLoading(false); // Set loading to false once data is fetched
+        // Check if the response has the expected 'articles' property
+        if (data && data.articles && Array.isArray(data.articles)) {
+          setArticles(data.articles);
+        } else {
+          setError("No articles found or invalid data format.");
+        }
+        setLoading(false);
       })
       .catch((err) => {
-        setError("Failed to load news. Please try again later.");  // Handle fetch errors
+        setError("Failed to load news. Please try again later.");
         setLoading(false);
         console.error("Error fetching news:", err);
       });
-  }, [category]); // Re-run effect when category changes
+  }, [category]);
 
-  // Show loading indicator or error message while data is being fetched
   if (loading) {
     return <div className="text-center">Loading news...</div>;
   }
@@ -46,17 +46,15 @@ const NewsBoard = ({ category }) => {
       {articles.length === 0 ? (
         <p className="text-center">No articles available in this category.</p>
       ) : (
-        articles.map((news, index) => {
-          return (
-            <NewsItem
-              key={index}
-              title={news.title}
-              description={news.description}
-              src={news.urlToImage}
-              url={news.url}
-            />
-          );
-        })
+        articles.map((news, index) => (
+          <NewsItem
+            key={index}
+            title={news.title}
+            description={news.description}
+            src={news.urlToImage}
+            url={news.url}
+          />
+        ))
       )}
     </div>
   );
