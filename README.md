@@ -25,7 +25,7 @@ This project fetches the latest news from various categories using the NewsAPI a
 
 1. Clone the repository to your local machine:
    ```bash
-   git clone https://github.com/your-username/news-magazine-react-app.git
+   git clone https://github.com/Yasintha8/news-magazine-react.js
 
 ## Screenshot
 <img src="https://github.com/Yasintha8/news-magazine-react.js/blob/main/src/assets/cover.png"/>
