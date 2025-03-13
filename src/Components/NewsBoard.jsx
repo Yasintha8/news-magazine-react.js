@@ -13,13 +13,13 @@ const NewsBoard = ({ category }) => {
     setLoading(true);
     setError(null);
 
-    fetch(url, {
-      headers: {
-        "Upgrade-Insecure-Requests": "1",
-        "Accept": "application/json",
-      },
-    })
-      .then((res) => res.json())
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         console.log("API Response:", data); // Log the response to check the structure
         if (data && data.articles && Array.isArray(data.articles)) {
@@ -30,7 +30,7 @@ const NewsBoard = ({ category }) => {
         setLoading(false);
       })
       .catch((err) => {
-        setError("Failed to load news. Please try again later.");
+        setError(`Failed to load news: ${err.message}`);
         setLoading(false);
         console.error("Error fetching news:", err);
       });
